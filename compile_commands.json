@@ -1,0 +1,47 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++14",
+      "-g",
+      "-Wall",
+      "-m64",
+      "-I",
+      "include",
+      "src/mandelbrot.cpp"
+    ],
+    "directory": "/home/daniel/Project/mandelbrot",
+    "file": "/home/daniel/Project/mandelbrot/src/mandelbrot.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++14",
+      "-g",
+      "-Wall",
+      "-m64",
+      "-I",
+      "include",
+      "src/math.cpp"
+    ],
+    "directory": "/home/daniel/Project/mandelbrot",
+    "file": "/home/daniel/Project/mandelbrot/src/math.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++14",
+      "-g",
+      "-Wall",
+      "-m64",
+      "-I",
+      "include",
+      "src/renderwindow.cpp"
+    ],
+    "directory": "/home/daniel/Project/mandelbrot",
+    "file": "/home/daniel/Project/mandelbrot/src/renderwindow.cpp"
+  }
+]
