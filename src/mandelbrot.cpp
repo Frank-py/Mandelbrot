@@ -8,12 +8,56 @@
 #include "RenderWindow.hpp"
 #include "Math.hpp"
 
-void zoom() {
-}
 
 SDL_DisplayMode DM;
 Math math;
 
+
+int iterations = 75;
+double zoomFactor = 0.5;
+double centerx;
+double centery;
+double leftBoundary;
+double rightBoundary;
+double topBoundary;
+double bottomBoundary;
+
+
+
+int mousex, mousey;
+
+
+void renderMandelbrot(bool isZooming, int mousex, int mousey, RenderWindow window) {
+    if (isZooming) {
+        centerx = (float)mousex/DM.w * (rightBoundary - leftBoundary) + leftBoundary; 
+        centery = (float)mousey/DM.h * (bottomBoundary - topBoundary) + topBoundary; 
+    } else {
+        centerx = 0;
+        centery = 0;
+    }
+
+    leftBoundary = centerx - 1/zoomFactor;
+    rightBoundary = centerx + 1/zoomFactor;
+    topBoundary = centery - 1/zoomFactor;
+    bottomBoundary = centery + 1/zoomFactor;
+    for (double j = 0; j <= DM.h; j+=1) {
+        for (double i = 0; i <= DM.w; i += 1) {
+            double x = leftBoundary + (rightBoundary - leftBoundary) * i / DM.w;
+            double y = topBoundary + (bottomBoundary - topBoundary) * j / DM.h;
+
+            // Check if the point is in the Mandelbrot set
+            std::complex<double> eingabe(x, y);
+            std::complex<double> value = math.checkifinmandel(eingabe, eingabe, 75);
+
+            if (std::real(value) == 1.0) {
+                // Draw the point on the screen
+                window.draw(i, j);
+            }
+        }
+    }
+    window.display();
+    window.clear();
+}
 typedef struct Vector2d 
 {
     float x;
@@ -36,7 +80,6 @@ int main (int argc, char *argv[])
     } 
 
     SDL_GetCurrentDisplayMode(0, &DM);
-    vectori nullstelle = {DM.w/2, DM.h/2};
     RenderWindow window("Mandelbrot", DM.w, DM.h);
     bool gameRunning = true;
 
@@ -44,25 +87,13 @@ int main (int argc, char *argv[])
     //std::cout << nullstelle.x << " " << nullstelle.y << std::endl;
     bool shown = false;
 
-    int zoom = 2;
     window.display();
     while (gameRunning) {
         if (!shown) {
-            for (double j = 0; j <= DM.h; j+=1) {
-                for (double i = 0; i <= (int)(DM.h*3/2); i += 1) {
-                    float x = i/(int)(DM.h*3/2) * 3.0 - 2.0;
-                    float y = j/DM.h * 2.0 - 1.0;
-                    std::complex<double> eingabe (x, y);
-                    std::complex<double> value = math.checkifinmandel(eingabe, eingabe, 75);	
-                    if (real(value) == 1.0) {
-                        window.draw(i+(int)(DM.w/4), j); 
-                    }
-                }
-            }
-            window.display();
-            window.clear();
+            renderMandelbrot(false, 0, 0, window);
+            shown = true;
         }
-        shown = true;
+
         while (SDL_PollEvent(&event))
         {
             switch (event.type) {
@@ -71,35 +102,18 @@ int main (int argc, char *argv[])
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT) {
-                        int mousex, mousey;
-                        double pointx, pointy;
+                        zoomFactor *= 4;
+                        iterations *= 2;
                         SDL_GetMouseState(&mousex, &mousey);
-                        pointy = float(mousey)/float(DM.h) * 2 - 1;
-                        pointx = float((mousex-(float)DM.w/4)/float((float)DM.h*3/2)) * 3 - 2;
-                        // I now want to zoom into the points where pointx and pointy are the center of the screen and zoom is the zoom factor.
-                        for (double j = 0; j <= DM.h; j+=1) {
-                            for (double i = 0; i <= (int)(DM.h*3/2); i += 1) {
-                                float x = i/(int)(DM.h*3/2) * 3.0 - 2.0;
-                                float y = j/DM.h * 2.0 - 1.0;
-                                std::complex<double> eingabe (x, y);
-                                std::complex<double> value = math.checkifinmandel(eingabe, eingabe, 75);	
-                                if (real(value) == 1.0) {
-                                    window.draw(i+(int)(DM.w/4), j); 
-                                }
-                            }
-                        }
-                       
+                        renderMandelbrot(true, mousex, mousey, window);
 
-
-                        // window.display();
-                        // window.clear();
-                        
                     }
                 case SDL_KEYDOWN:
                     switch (event.key.keysym.sym)
                     {
                         case SDLK_f:  window.ToggleFullscreen(); break;
                         case SDLK_q: gameRunning = false; break;
+                        case SDLK_PLUS: iterations*=2; renderMandelbrot(true, mousex, mousey, window); break;
                     }
             }
             //window.display();
