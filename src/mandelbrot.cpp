@@ -8,19 +8,29 @@
 #include "RenderWindow.hpp"
 #include "Math.hpp"
 
+#ifdef Fullscreen
 
 SDL_DisplayMode DM;
+int width = DM.w;
+int height = height;
+
+#else
+int width = 800;
+int height = 800;
+#endif
+
+
 Math math;
 
 
 int iterations = 75;
-double zoomFactor = 0.5;
-double centerx;
-double centery;
-double leftBoundary;
-double rightBoundary;
-double topBoundary;
-double bottomBoundary;
+long double zoomFactor = 0.5;
+long double centerx;
+long double centery;
+long double leftBoundary;
+long double rightBoundary;
+long double topBoundary;
+long double bottomBoundary;
 
 
 
@@ -29,8 +39,8 @@ int mousex, mousey;
 
 void renderMandelbrot(bool isZooming, int mousex, int mousey, RenderWindow window) {
     if (isZooming) {
-        centerx = (float)mousex/DM.w * (rightBoundary - leftBoundary) + leftBoundary; 
-        centery = (float)mousey/DM.h * (bottomBoundary - topBoundary) + topBoundary; 
+        centerx = (float)mousex/width * (rightBoundary - leftBoundary) + leftBoundary; 
+        centery = (float)mousey/height * (bottomBoundary - topBoundary) + topBoundary; 
     } else {
         centerx = 0;
         centery = 0;
@@ -40,14 +50,14 @@ void renderMandelbrot(bool isZooming, int mousex, int mousey, RenderWindow windo
     rightBoundary = centerx + 1/zoomFactor;
     topBoundary = centery - 1/zoomFactor;
     bottomBoundary = centery + 1/zoomFactor;
-    for (double j = 0; j <= DM.h; j+=1) {
-        for (double i = 0; i <= DM.w; i += 1) {
-            double x = leftBoundary + (rightBoundary - leftBoundary) * i / DM.w;
-            double y = topBoundary + (bottomBoundary - topBoundary) * j / DM.h;
+    for (int j = 0; j <= height; j+=1) {
+        for (int i = 0; i <= width; i += 1) {
+            long double x = leftBoundary + (rightBoundary - leftBoundary) * i / width;
+            long double y = topBoundary + (bottomBoundary - topBoundary) * j / height;
 
             // Check if the point is in the Mandelbrot set
             std::complex<double> eingabe(x, y);
-            std::complex<double> value = math.checkifinmandel(eingabe, eingabe, 75);
+            std::complex<double> value = math.checkifinmandel(eingabe, eingabe, iterations);
 
             if (std::real(value) == 1.0) {
                 // Draw the point on the screen
@@ -78,9 +88,13 @@ int main (int argc, char *argv[])
         std::cerr << "Couldn't initialize SDL2" << std::endl;
         return 1;
     } 
-
+    #ifdef Fullscreen
     SDL_GetCurrentDisplayMode(0, &DM);
-    RenderWindow window("Mandelbrot", DM.w, DM.h);
+    RenderWindow window("Mandelbrot", width, height, true);
+    #else
+    RenderWindow window("Mandelbrot", width, height, false);
+    #endif
+
     bool gameRunning = true;
 
     SDL_Event event;
@@ -103,7 +117,7 @@ int main (int argc, char *argv[])
                 case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         zoomFactor *= 4;
-                        iterations *= 2;
+                        //iterations *= 2;
                         SDL_GetMouseState(&mousex, &mousey);
                         renderMandelbrot(true, mousex, mousey, window);
 
@@ -113,7 +127,7 @@ int main (int argc, char *argv[])
                     {
                         case SDLK_f:  window.ToggleFullscreen(); break;
                         case SDLK_q: gameRunning = false; break;
-                        case SDLK_PLUS: iterations*=2; renderMandelbrot(true, mousex, mousey, window); break;
+                        case SDLK_m: iterations*=2; renderMandelbrot(true, mousex, mousey, window); break;
                     }
             }
             //window.display();

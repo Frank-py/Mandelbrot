@@ -6,7 +6,7 @@
 class RenderWindow 
 {
 public:
-	RenderWindow(const char* p_title, int p_w, int p_h);
+	RenderWindow(const char* p_title, int p_w, int p_h, bool fullscreen);
 	void cleanUp();
 	void clear();
 	void render(int x, int y);

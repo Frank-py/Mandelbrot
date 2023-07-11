@@ -5,7 +5,7 @@
 
 #include "RenderWindow.hpp"
 
-RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
+RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h, bool fullscreen)
 	:window(NULL), renderer(NULL)  
 {
 	window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, p_w, p_h, SDL_WINDOW_SHOWN);
@@ -31,8 +31,9 @@ RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
 	//SDL_Surface* icon = IMG_Load("bin/debug/res/gfx/icon.png");
 	//SDL_SetWindowIcon(window, icon);
 
-
-	ToggleFullscreen();
+    if (fullscreen) {
+	    ToggleFullscreen();
+    }
 	SDL_ShowCursor(1);
 
 	}
