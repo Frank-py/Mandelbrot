@@ -36,6 +36,7 @@ long double bottomBoundary;
 
 
 int mousex, mousey;
+std::complex<long double> startPoint(-1.99977406013629035931268075596, -0.00000000329004032147943505349697);
 
 
 void renderMandelbrot(bool isZooming, int mousex, int mousey, RenderWindow window) {
@@ -47,10 +48,15 @@ void renderMandelbrot(bool isZooming, int mousex, int mousey, RenderWindow windo
         centery = 0;
     }
 
-    leftBoundary = centerx - 1/zoomFactor;
-    rightBoundary = centerx + 1/zoomFactor;
-    topBoundary = centery - 1/zoomFactor;
-    bottomBoundary = centery + 1/zoomFactor;
+    // leftBoundary = centerx - 1/zoomFactor;
+    // rightBoundary = centerx + 1/zoomFactor;
+    // topBoundary = centery - 1/zoomFactor;
+    // bottomBoundary = centery + 1/zoomFactor;
+
+    leftBoundary = std::real(startPoint) - 1/zoomFactor;
+    rightBoundary = std::real(startPoint) + 1/zoomFactor;
+    topBoundary = std::imag(startPoint) - 1/zoomFactor;
+    bottomBoundary = std::imag(startPoint) + 1/zoomFactor;
     for (int j = 0; j <= height; j+=1) {
         for (int i = 0; i <= width; i += 1) {
             long double x = leftBoundary + (rightBoundary - leftBoundary) * i / width;
@@ -69,7 +75,6 @@ void renderMandelbrot(bool isZooming, int mousex, int mousey, RenderWindow windo
                 window.draw(i, j, hue, valuehue);
             } 
         }
-    std::cout << "done" << std::endl;
     window.display();
     window.clear();
 }
@@ -108,6 +113,12 @@ int main (int argc, char *argv[])
 
     window.display();
     while (gameRunning) {
+        zoomFactor += 2;
+        if ((int)((zoomFactor - 0.5)/2) % 100 == 0){
+            iterations += 1;
+        }
+        renderMandelbrot(true, 0, 0, window);
+        
         if (!shown) {
             renderMandelbrot(false, 0, 0, window);
             shown = true;
