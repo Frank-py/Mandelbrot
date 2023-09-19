@@ -11,7 +11,7 @@ public:
 	void clear();
 	void render(int x, int y);
 	void ToggleFullscreen();
-	void draw(int x, int y);
+	void draw(int x, int y, int hue, int valuehue);
 	void display();
 private:
 	SDL_Window* window;

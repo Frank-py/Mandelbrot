@@ -8,6 +8,7 @@ public:
 		std::complex<double> z,
 		std::complex<double> c,
 		int iterations,
+        int allit,
 		double limit = 4.0
 	);
 	

@@ -1,4 +1,5 @@
 #include <SDL2/SDL_mouse.h>
+#include <complex>
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 
@@ -57,14 +58,18 @@ void renderMandelbrot(bool isZooming, int mousex, int mousey, RenderWindow windo
 
             // Check if the point is in the Mandelbrot set
             std::complex<double> eingabe(x, y);
-            std::complex<double> value = math.checkifinmandel(eingabe, eingabe, iterations);
+            std::complex<double> value = math.checkifinmandel(eingabe, eingabe, iterations, iterations);
 
-            if (std::real(value) == 1.0) {
                 // Draw the point on the screen
-                window.draw(i, j);
-            }
+                int hue = (int)(360*std::imag(value)/iterations);
+
+                
+                int valuehue = 1;
+                 
+                window.draw(i, j, hue, valuehue);
+            } 
         }
-    }
+    std::cout << "done" << std::endl;
     window.display();
     window.clear();
 }
